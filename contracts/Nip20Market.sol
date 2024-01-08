@@ -26,10 +26,11 @@ contract Nip20Market is Ownable{
 
 
     event OrderCreated(uint256 indexed orderId, address indexed seller, uint256 price, bytes32 ticker, bytes32 txhash);
+    event OrderRemoved(uint256 indexed orderId);
     event OrderExecuted(uint256 indexed orderId, address indexed buyer);
     event NIP20TokenEvent_transfer(address from, address to, bytes32 ticker, bytes32 txhash);
 
-    constructor() {}
+    constructor(address initialOwner) Ownable(initialOwner) {}
     receive() payable external{}
     fallback() external{}
 
@@ -60,6 +61,7 @@ contract Nip20Market is Ownable{
         require(orders[id].isActive, "no active order of this id");
         require(orders[id].seller == msg.sender, "only the sender can cancel the order");
         orders[id].isActive = false;
+        emit OrderRemoved(id);
         emit NIP20TokenEvent_transfer(address(this), msg.sender, orders[id].ticker, orders[id].inscription);
     }
     
