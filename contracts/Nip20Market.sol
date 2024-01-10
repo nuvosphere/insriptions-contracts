@@ -93,7 +93,9 @@ contract Nip20Market is Ownable{
         bytes32 s;
         uint8 v;
         (r, s, v) = splitSignature(signature);
-        return ecrecover(data, v, r, s);
+        
+        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", data));
+        return ecrecover(prefixedHash, v, r, s);
     }
 
     function splitSignature(bytes memory sig) internal pure returns (bytes32 r, bytes32 s, uint8 v) {
