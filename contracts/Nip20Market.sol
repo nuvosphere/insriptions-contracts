@@ -72,7 +72,9 @@ contract Nip20Market is Ownable{
         require(msg.value >= order.price, "Insufficient payment");
 
         // Transfer payment and emit event
-        payable(order.seller).transfer(msg.value * (1000 - _fee) / 1000);
+        (bool sent, bytes memory data) = order.seller.call{value: msg.value * (1000 - _fee) / 1000}("");
+        require(sent, "Failed to send Ether");
+        
         emit NIP20TokenEvent_transfer(address(this), msg.sender,  order.ticker, order.inscription);
 
         order.isActive = false;
